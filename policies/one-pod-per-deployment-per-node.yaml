@@ -1,0 +1,26 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: one-pod-per-deployment-per-node
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: one-pod-per-deployment-per-node
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "All pods most have anti-affinity to not have more than one pod of the same deployment on the same node"
+        pattern:
+          spec:
+            affinity:
+              podAntiAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  - topologyKey: "kubernetes.io/hostname"
+      exclude:
+        resources:
+          namespaces:
+            - "kube-system"
+            - kyverno
