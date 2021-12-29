@@ -1,0 +1,40 @@
+name: DigitalOcean Challenge
+policies:
+  - policies/one-pod-per-deployment-per-node.yaml
+  - policies/require-cpu-architecture.yaml
+resources:
+  - tests/fail/both.yaml
+  - tests/pass/both.yaml
+  - tests/pass/one-pod-per-deployment-per-node.yaml
+  - tests/pass/require-cpu-architecture.yaml
+results:
+  - policy: one-pod-per-deployment-per-node
+    rule: one-pod-per-deployment-per-node
+    resource: one-pod-per-deployment-per-node
+    kind: Deployment
+    result: pass
+  - policy: one-pod-per-deployment-per-node
+    rule: one-pod-per-deployment-per-node
+    resource: default-backend
+    kind: Deployment
+    result: pass
+  - policy: one-pod-per-deployment-per-node
+    rule: one-pod-per-deployment-per-node
+    resource: fail
+    kind: Deployment
+    result: fail
+  - policy: require-cpu-architecture
+    rule: require-cpu-architecture
+    resource: require-cpu-architecture
+    kind: Deployment
+    result: pass
+  - policy: require-cpu-architecture
+    rule: require-cpu-architecture
+    resource: default-backend
+    kind: Deployment
+    result: pass
+  - policy: require-cpu-architecture
+    rule: require-cpu-architecture
+    resource: fail
+    kind: Deployment
+    result: fail

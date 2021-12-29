@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: require-cpu-architecture
+spec:
+  selector:
+    matchLabels:
+      app: default-backend
+      release: default-backend
+  replicas: 13
+  template:
+    metadata:
+      labels:
+        app: default-backend
+        release: default-backend
+    spec:
+      containers:
+        - name: default-backend
+          image: "ghcr.io/wyrihaximusnet/default-backend:random"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - arm64
+                      - arm7

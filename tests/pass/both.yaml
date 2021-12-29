@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: default-backend
+spec:
+  selector:
+    matchLabels:
+      app: default-backend
+      release: default-backend
+  replicas: 13
+  template:
+    metadata:
+      labels:
+        app: default-backend
+        release: default-backend
+        appRevision: default-backend-1
+    spec:
+      containers:
+        - name: default-backend
+          image: "ghcr.io/wyrihaximusnet/default-backend:random"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: appRevision
+                    operator: In
+                    values:
+                      - default-backend-1
+              topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - arm64
+                      - arm7

@@ -1,26 +1,29 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: one-pod-per-deployment-per-node
+  name: require-cpu-architecture
 spec:
   validationFailureAction: enforce
   background: false
   rules:
-    - name: one-pod-per-deployment-per-node
+    - name: require-cpu-architecture
       match:
         resources:
           kinds:
             - Deployment
       validate:
-        message: "All pods most have anti-affinity to not have more than one pod of the same deployment revision on the same node"
+        message: "All pods most have nodeAffinity configured with CPU architecture so it always ends up on a node that has a CPU architecture supported by the used OCI image"
         pattern:
           spec:
             template:
               spec:
                 affinity:
-                  podAntiAffinity:
+                  nodeAffinity:
                     requiredDuringSchedulingIgnoredDuringExecution:
-                      - topologyKey: "kubernetes.io/hostname"
+                      nodeSelectorTerms:
+                        - matchExpressions:
+                            - key: kubernetes.io/arch
+                              operator: In
       exclude:
         resources:
           namespaces:
